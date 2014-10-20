@@ -75,6 +75,7 @@ public class SkyNode extends MoteIVNode {
   public void dataReceived(USARTSource source, int data) {
     radio.dataReceived(source, data);
     flash.dataReceived(source, data);
+    System.out.println("Data Received");
     /* if nothing selected, just write back a random byte to these devs */
     if (!radio.getChipSelect() && !flash.getChipSelect()) {
       source.byteReceived(0);

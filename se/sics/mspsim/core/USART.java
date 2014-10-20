@@ -74,7 +74,8 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   public static final int USART1_RX_BIT = 4;
   public static final int USART1_TX_BIT = 5;
 
-  
+  public static final int FLAG 	   = 0x7e;
+  public static final byte PROTOCOL	   = 69;
   
   // Flags.
   public static final int UTCTL_TXEMPTY = 0x01;
@@ -108,9 +109,12 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   private int utxbuf;
   private int txbit;
   
+  private int count = 0;
   private boolean txEnabled = false;
   private boolean rxEnabled = false;
   private boolean spiMode = false;
+
+  private int buffer_length = 0;
   
   /* DMA controller that needs to be called at certain times */
   private DMA dma;
@@ -275,7 +279,8 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
       updateBaudRate();
       break;
     case UTXBUF:
-      if (DEBUG) log(" USART_UTXBUF: " + data + " " + (data > 32 ? (char)data : '.'));
+    //  System.out.println(" USART_UTXBUF: " + data + " " + (data > 32 ? (char)data : '.'));
+   
       if (txEnabled || (spiMode && rxEnabled)) {
         // Interruptflag not set!
         clrBitIFG(utxifg);
@@ -288,8 +293,33 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
         // Schedule on cycles here
         // TODO: adding 3 extra cycles here seems to give
         // slightly better timing in some test...
-
-        nextTXByte = data;
+	 if(data == FLAG && count <0)
+      	{
+		count++;	//		
+		nextTXByte = 13;
+      	}else if(count < 10){
+		//System.out.println("count incremented"+count);
+		count++;
+		if(count == 8){
+			//System.out.println("Length of the pack:"+data);
+			buffer_length = data;
+		}
+		nextTXByte = 13;		
+	}
+	else if(data == FLAG && count == 10)	{
+		count = 0;
+		//System.out.println("count = 0");
+		nextTXByte = 13;
+      	}
+      	else if(count ==10 && buffer_length>0){
+		//System.out.println("Count:"+count);
+		nextTXByte = data;	    
+		buffer_length --;  
+     	 }
+	else{
+		nextTXByte = ' ';
+	}	
+        
         if (!transmitting) {
             /* how long time will the copy from the TX_BUF to the shift reg take? */
             /* assume 3 cycles? */
@@ -299,7 +329,8 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
       } else {
         log("Ignoring UTXBUF data since TX not active...");
       }
-      utxbuf = data;
+     
+	utxbuf = data;
       break;
     }
   }
