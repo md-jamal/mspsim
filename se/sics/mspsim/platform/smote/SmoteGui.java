@@ -54,16 +54,16 @@ public class SmoteGui extends AbstractNodeGUI {
 		                int x = e.getX();
                  		int y = e.getY();
 				System.out.println("mouse x:"+x +"and y:"+y);
-                 		if (x > 180 && x < 200) 
+                 		if (x > 100 && x < 120) 
 				{
-		                 	if (y > 235 && y < 255) 
+		                 	if (y > 170 && y < 185) 
 					{
 		                 	       buttonDown = true;
-		                 	     //  WismoteGui.this.node.getButton().setPressed(true);
+		                 	       SmoteGui.this.node.getButton().setPressed(true);
 						System.out.println("User button pressed");				
 		                 	       repaint(7, 237, 11, 13);
 		                 	} 
-					else if (y > 265 && y < 285) 
+					else if (y > 190 && y < 205) 
 					{
 		                        	resetDown = true;
 						System.out.println("Reset button pressed");
@@ -77,7 +77,7 @@ public class SmoteGui extends AbstractNodeGUI {
                 		if (buttonDown) 
 				{
 		                    buttonDown = false;
-		                    //WismoteGui.this.node.getButton().setPressed(false);
+		                    SmoteGui.this.node.getButton().setPressed(false);
 		                    repaint(7, 237, 11, 13);
 
 		                }
@@ -89,14 +89,14 @@ public class SmoteGui extends AbstractNodeGUI {
                 		    repaint(7, 269, 11, 13);
                 		    if (x > 6 && x < 19 && y > 268 && y < 282) 
 				    {
-		                       // WismoteGui.this.node.getCPU().reset();
+		                        SmoteGui.this.node.getCPU().reset();
                 		    }
                 		}
             		}	
      		   };
 
        		 this.addMouseListener(mouseHandler);
-		 node.getLeds().addStateChangeListener(ledsListener);
+		 //node.getLeds().addStateChangeListener(ledsListener);
 	}
 
 
