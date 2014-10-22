@@ -259,8 +259,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
     }
 
     bcs = config.createClockSystem(this, memory, timers);
-    System.out.println("bcs Address Min"+bcs.getAddressRangeMin());
-    System.out.println("bcs Address Max"+bcs.getAddressRangeMax());
     ioSegment.setIORange(bcs.getAddressRangeMin(), bcs.getAddressRangeMax() - bcs.getAddressRangeMin() + 1, bcs);
 
     // SFR and Basic clock system.

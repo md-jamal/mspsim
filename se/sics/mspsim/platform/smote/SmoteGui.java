@@ -134,25 +134,15 @@ public class SmoteGui extends AbstractNodeGUI {
         	// Display all active LEDs
         	Leds leds = node.getLeds();
         	int l = leds.getLeds();
-        	if ((l & 1) != 0) {
-        	    g.setColor(RED_TRANS);
-        	    g.fillOval(RED1_X - 2, LED_Y - 1, LED_HEIGHT, LED_WIDTH);
-        	    g.setColor(RED_C);
-        	    g.fillOval(RED1_X, LED_Y, LED_HEIGHT - 5, LED_WIDTH - 2);
-        	}
+		//System.out.println("Value of l is "+l);
+        	
         	if ((l & 2) != 0) {
         	    g.setColor(GREEN_TRANS);
         	    g.fillOval(GREEN_X - 2, LED_Y - 1, LED_HEIGHT, LED_WIDTH);
         	    g.setColor(GREEN_C);
         	    g.fillOval(GREEN_X, LED_Y, LED_HEIGHT - 5, LED_WIDTH - 2);
         	}
-        	if ((l & 4) != 0) {
-        	    g.setColor(RED_TRANS);
-        	    g.fillOval(RED2_X - 2, LED_Y - 1, LED_HEIGHT, LED_WIDTH);
-        	    g.setColor(RED_C);
-        	    g.fillOval(RED2_X, LED_Y, LED_HEIGHT - 5, LED_WIDTH - 2);
-        	}
-
+        	
         	if (buttonDown) {
         	    //g.setColor(BUTTON_C);
         	   // g.fillOval(8, 236, 9, 9);
