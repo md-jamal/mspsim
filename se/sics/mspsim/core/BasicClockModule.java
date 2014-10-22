@@ -47,6 +47,7 @@ public class BasicClockModule extends ClockSystem {
   private static final int DCOCTL = 0x56; // 0x60
   private static final int BCSCTL1 = 0x57; // 0x84 
   private static final int BCSCTL2 = 0x58;
+  private static final int BCSCTL3 = 0x53;
 
   private static final int ACLK_FRQ = 32768;
   // DCO_FRQ what default frq is the DCO running at???
@@ -76,6 +77,11 @@ public class BasicClockModule extends ClockSystem {
   private int smclSel;
   private int divSMclk = 1;
   private int dcoResitorSel;
+  private int xt2Sel;
+  private int lowFreqSel;
+  private int oscCapSel;
+  private int xt2OscFault;
+  private int xt1OscFault;
 
   /**
    * Creates a new <code>BasicClockModule</code> instance.
@@ -92,7 +98,7 @@ public class BasicClockModule extends ClockSystem {
   }
 
   public int getAddressRangeMin() {
-    return DCOCTL;
+    return BCSCTL3;
   }
 
   public int getAddressRangeMax() {
@@ -103,6 +109,7 @@ public class BasicClockModule extends ClockSystem {
     write(DCOCTL, 0x60, false, cpu.cycles);
     write(BCSCTL1, 0x84, false, cpu.cycles);
     write(BCSCTL2, 0, false, cpu.cycles);
+    write(BCSCTL3, 0x20, false, cpu.cycles);
   }
 
   // do nothing?
@@ -152,6 +159,14 @@ public class BasicClockModule extends ClockSystem {
 			 + smclSel + " MCLKSel: " + mclkSel + " divMclk: " +
 			 divMclk + " DCOResitorSel: " + dcoResitorSel);
       break;
+
+    case BCSCTL3:
+	xt2Sel 		= (data >> 6) & 3;
+	lowFreqSel	= ((data >> 4) & 3);
+	oscCapSel	= ((data >> 2) & 3);
+	xt2OscFault	= ((data >> 1) & 1);
+	xt1OscFault	= (data & 1);
+
     }
 
     // resistor selects three bits gives the highest impact on the DCO_FACTOR

@@ -48,13 +48,27 @@ public class SmoteNode extends GenericNode implements PortListener,USARTListener
 	private Button button;
 	private SmoteGui gui;
 
+	/* P8.6 - Red (left) led */
+    	private static final int LEDS_CONF_RED1   = 1 << 5;
+    	private static final int LEDS_RED1        = 1 << 0;
+    	/* P5.5 - Green (middle) led */
+   	private static final int LEDS_CONF_GREEN  = 1 << 5;
+    	private static final int LEDS_GREEN       = 1 << 1;
+    	/* P2.4 - Red (right) led */
+    	private static final int LEDS_CONF_RED2   = 1 << 5;
+    	private static final int LEDS_RED2        = 1 << 2;
+	
+	/*Colors of each Leds*/
+    	private static final int[] LEDS = { 0xff2020, 0xff2020, 0xff2020 };
+
 
 	/* P1.4 - Button */
 	public static final int BUTTON_PIN = 4;
-
+	public static final int MODE_LEDS_OFF = 0;
 	public SmoteNode()
 	{
 		super("Smote",new MSP430f2618Config());
+	        setMode(MODE_LEDS_OFF);		
 	}
 
 	public Leds getLeds() {
@@ -78,6 +92,8 @@ public class SmoteNode extends GenericNode implements PortListener,USARTListener
 		cpu.getIOUnit(IOPort.class, "P3").addPortListener(this);
         	cpu.getIOUnit(IOPort.class, "P4").addPortListener(this);
         	cpu.getIOUnit(IOPort.class, "P5").addPortListener(this);
+		//cpu.getIOUnit(IOPort.class, "P6").addPortListener(this);
+		//cpu.getIOUnit(IOPort.class, "P7").addPortListener(this);
         	cpu.getIOUnit(IOPort.class, "P8").addPortListener(this);
 		
 		IOUnit usart0 = cpu.getIOUnit("USCI B1");
@@ -94,7 +110,7 @@ public class SmoteNode extends GenericNode implements PortListener,USARTListener
          	   throw new EmulationException("Could not setup wismote mote - 				missing USCI B1");
         	}
 
-		//leds = new Leds(cpu, LEDS);
+		leds = new Leds(cpu, LEDS);
 	        button = new Button("Button", cpu, port1, BUTTON_PIN, true);
 	
         	IOUnit usart = cpu.getIOUnit("USCI A1");
@@ -143,28 +159,30 @@ public class SmoteNode extends GenericNode implements PortListener,USARTListener
         	}
     	}
 	public void portWrite(IOPort source, int data) {
-		System.out.println("portWrite called");
+		
 		switch (source.getPort()) {
         	case 1:
 	            //ds2411.dataPin((data & DS2411_DATA) != 0);
         	    break;
         	case 2:
-        	    //leds.setLeds(LEDS_GREEN, (data & LEDS_CONF_GREEN) == 0 && 				(source.getDirection() & LEDS_CONF_GREEN) != 0);
+        	   leds.setLeds(LEDS_RED2, (data & LEDS_CONF_RED2) == 0 && 				(source.getDirection() & LEDS_CONF_RED2) != 0);
 	            break;
         	case 3:
-        	    // Chip select = active low...
-        	    //radio.setChipSelect((data & CC2520_CHIP_SELECT) == 0);
+        	     //Chip select = active low...
+        	   // radio.setChipSelect((data & CC2520_CHIP_SELECT) == 0);
         	    break;
         	case 4:
         	    //radio.portWrite(source, data);
         	    //flash.portWrite(source, data);
-        	    radio.setVRegOn((data & CC2520_VREG) != 0);
+        	    //radio.setVRegOn((data & CC2520_VREG) != 0);
         	    break;
         	case 5:
-        	    //leds.setLeds(LEDS_RED2, (data & LEDS_CONF_RED2) == 0 && 				(source.getDirection() & LEDS_CONF_RED2) != 0);
+			//System.out.println("portWrite called for port5");
+		     leds.setLeds(LEDS_GREEN, (data & LEDS_CONF_GREEN) == 0 && 				(source.getDirection() & LEDS_CONF_GREEN) != 0);
+        	    
 	            break;
         	case 8:
-        	   // leds.setLeds(LEDS_RED1, (data & LEDS_CONF_RED1) == 0 && 				(source.getDirection() & LEDS_CONF_RED1) != 0);
+        	    leds.setLeds(LEDS_RED1, (data & LEDS_CONF_RED1) == 0 && 				(source.getDirection() & LEDS_CONF_RED1) != 0);
 	            break;
         	}
     

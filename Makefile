@@ -57,9 +57,9 @@ JAVAARGS=-classpath "${CLASSPATH}"
 
 ifndef FIRMWAREFILE
 ESBFIRMWARE = firmware/esb/sensor-demo.esb
-SKYFIRMWARE = firmware/sky/button.elf
-Z1FIRMWARE = firmware/z1/blink.z1
-SMOTEFIRMWARE   = firmware/smote/blink.sky
+SKYFIRMWARE = firmware/sky/blink.elf
+Z1FIRMWARE = firmware/z1/blinkz1.elf
+SMOTEFIRMWARE   = firmware/smote/printf.elf
 WISMOTEFIRMWARE = firmware/wismote/blink.wismote
 TYNDALLFIRMWARE = firmware/tyndall/blink.tyndall
 EXP5438FIRMWARE = firmware/exp5438/testcase-bits.exp5438

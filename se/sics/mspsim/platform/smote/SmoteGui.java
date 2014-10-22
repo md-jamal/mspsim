@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.core.StateChangeListener;
 import se.sics.mspsim.platform.AbstractNodeGUI;
 
@@ -18,7 +19,7 @@ public class SmoteGui extends AbstractNodeGUI {
 	private final SmoteNode node;
 	private boolean buttonDown = false;
 	private boolean resetDown = false;
-	
+	/*
 	private static final int LED_HEIGHT = 8;
 	private static final int LED_WIDTH = 5;
 
@@ -30,6 +31,25 @@ public class SmoteGui extends AbstractNodeGUI {
 
 	private static final Rectangle LEDS_BOUNDS = new Rectangle(RED1_X - 2,
             LED_Y - 1,  RED1_X + LED_HEIGHT, LED_WIDTH);
+	*/
+
+	private static final int RED1_X = 77;
+   	private static final int GREEN_X = 77;
+    	private static final int RED2_X = 77;
+    	private static final int LED_Y = 159;
+    	private static final int LED_HEIGHT = 8;
+    	private static final int LED_WIDTH = 10;
+
+    	private static final Color GREEN_TRANS = new Color(0xf0, 0x40, 0x40, 0xa0);
+    	private static final Color RED_TRANS = new Color(0xf0, 0x40, 0x40, 0xa0);
+
+    	private static final Color GREEN_C = new Color(0xffff8000);
+    	private static final Color RED_C = new Color(0xffff8000);
+
+    	private static final Color BUTTON_C = new Color(0x60ffffff);
+
+    	private static final Rectangle LEDS_BOUNDS = new Rectangle(RED1_X - 2,
+            LED_Y - 1, RED2_X - RED1_X + LED_HEIGHT, LED_WIDTH);
 
 	private final StateChangeListener ledsListener = new StateChangeListener() 		{
         	public void stateChanged(Object source, int oldState, int newState) 			{
@@ -96,7 +116,7 @@ public class SmoteGui extends AbstractNodeGUI {
      		   };
 
        		 this.addMouseListener(mouseHandler);
-		 //node.getLeds().addStateChangeListener(ledsListener);
+		 node.getLeds().addStateChangeListener(ledsListener);
 	}
 
 
@@ -104,4 +124,46 @@ public class SmoteGui extends AbstractNodeGUI {
 		System.out.println("Stop GUI Called");
 	
 	}
+
+
+	protected void paintComponent(Graphics g) {
+        	Color old = g.getColor();
+		//System.out.println("Paint Component called\n");
+        	super.paintComponent(g);
+	
+        	// Display all active LEDs
+        	Leds leds = node.getLeds();
+        	int l = leds.getLeds();
+        	if ((l & 1) != 0) {
+        	    g.setColor(RED_TRANS);
+        	    g.fillOval(RED1_X - 2, LED_Y - 1, LED_HEIGHT, LED_WIDTH);
+        	    g.setColor(RED_C);
+        	    g.fillOval(RED1_X, LED_Y, LED_HEIGHT - 5, LED_WIDTH - 2);
+        	}
+        	if ((l & 2) != 0) {
+        	    g.setColor(GREEN_TRANS);
+        	    g.fillOval(GREEN_X - 2, LED_Y - 1, LED_HEIGHT, LED_WIDTH);
+        	    g.setColor(GREEN_C);
+        	    g.fillOval(GREEN_X, LED_Y, LED_HEIGHT - 5, LED_WIDTH - 2);
+        	}
+        	if ((l & 4) != 0) {
+        	    g.setColor(RED_TRANS);
+        	    g.fillOval(RED2_X - 2, LED_Y - 1, LED_HEIGHT, LED_WIDTH);
+        	    g.setColor(RED_C);
+        	    g.fillOval(RED2_X, LED_Y, LED_HEIGHT - 5, LED_WIDTH - 2);
+        	}
+
+        	if (buttonDown) {
+        	    //g.setColor(BUTTON_C);
+        	   // g.fillOval(8, 236, 9, 9);
+        	}
+        	if (resetDown) {
+        	    //g.setColor(BUTTON_C);
+        	   // g.fillOval(8, 271, 9, 9);
+        	}
+        	g.setColor(old);
+    	}	
+
+
+
 }
