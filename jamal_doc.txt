@@ -1,0 +1,21 @@
+
+
+Two Methods of how this runs:
+
+First Method:
+
+	GenericNode calls the cpuloop.loop() method
+			|
+			|
+			\
+	That will call run() method which runs in a while loop 
+			|
+			|
+			\
+	Calls emulateOp which will emulate opcode one by one and depending on the opcode it performs the operation
+
+
+Second Method:
+	
+	GenericNode calls cpu.stepInstructions() which will perform emulateOp function
+	call each time we press the step on the ui
