@@ -81,13 +81,14 @@ public class SmoteGui extends AbstractNodeGUI {
 		                 	       buttonDown = true;
 		                 	       SmoteGui.this.node.getButton().setPressed(true);
 						System.out.println("User button pressed");				
-		                 	       repaint(7, 237, 11, 13);
+		                 	       repaint(100, 185, 120, 170);
 		                 	} 
 					else if (y > 190 && y < 205) 
 					{
 		                        	resetDown = true;
 						System.out.println("Reset button pressed");
-		                        	repaint(7, 269, 11, 13);
+						SmoteGui.this.node.getCPU().reset();
+		                        	repaint(100, 205, 120, 190);
 		                    	}
 		                }
 	            	}
@@ -98,19 +99,14 @@ public class SmoteGui extends AbstractNodeGUI {
 				{
 		                    buttonDown = false;
 		                    SmoteGui.this.node.getButton().setPressed(false);
-		                    repaint(7, 237, 11, 13);
+	                 	    repaint(100, 185, 120, 170);
 
 		                }
 				else if (resetDown) 
 				{
 		                    int x = e.getX();
 		                    int y = e.getY();
-                		    resetDown = false;
-                		    repaint(7, 269, 11, 13);
-                		    if (x > 6 && x < 19 && y > 268 && y < 282) 
-				    {
-		                        SmoteGui.this.node.getCPU().reset();
-                		    }
+                		    resetDown = false;                		   
                 		}
             		}	
      		   };
