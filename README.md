@@ -7,3 +7,4 @@ Features Supported:
 
 1. Led Blink
 2. User Button
+3. Printf Support
