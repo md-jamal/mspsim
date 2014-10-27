@@ -85,6 +85,11 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
   public static final int UTCTL_URXSE = 0x08;
   public static final int USCI_BUSY = 0x01;
   
+  public static final int FLAG 	   = 0x7e;
+  public static final byte PROTOCOL	   = 69;
+  private int count = 0;
+  private int buffer_length = 0;
+
   private USARTListener usartListener;
 
   private int utxifg;
@@ -301,7 +306,7 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
       break;
     case UAxTXBUF:
     case UBxTXBUF:
-      if (true) System.out.println(": USART_UTXBUF:" + (char) data + " = " + data + "\n");
+      if (DEBUG) System.out.println(": USART_UTXBUF:" + (char) data + " = " + data + "\n");
       if (txEnabled || (spiMode && rxEnabled)) {
         // Interruptflag not set!
         clrBitIFG(utxifg);
@@ -314,8 +319,30 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
         // Schedule on cycles here
         // TODO: adding 3 extra cycles here seems to give
         // slightly better timing in some test...
-
-        nextTXByte = data;
+	 if(data == FLAG && count <0)
+      	{
+		count++;	//		
+		nextTXByte = 13;
+        }else if(count < 10){
+		//System.out.println("count incremented"+count);
+		count++;
+		if(count == 8){
+			//System.out.println("Length of the pack:"+data);
+			buffer_length = data;
+		}
+		nextTXByte = 13;		
+	}else if(data == FLAG && count == 10)	{
+		count = 0;
+		//System.out.println("count = 0");
+		nextTXByte = 13;
+      	}else if(count ==10 && buffer_length>0){
+		//System.out.println("Count:"+count);
+		nextTXByte = data;	    
+		buffer_length --;  
+     	 }
+	else{
+		nextTXByte = ' ';
+	}	
         if (!transmitting) {
             /* how long time will the copy from the TX_BUF to the shift reg take? */
             /* assume 3 cycles? */
