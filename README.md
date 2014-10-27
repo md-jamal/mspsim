@@ -11,3 +11,10 @@ Features Supported:
 
 
 Run the file as make FIRMWAREFILE=firmware/smote/abc.elf runsmote
+
+
+ToDo:
+
+1.Adding Transmit and Receive Led Support 
+2. Checking Radio
+3. Clock Frequency
