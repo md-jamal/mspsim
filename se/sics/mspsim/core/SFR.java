@@ -52,6 +52,9 @@ public class SFR extends IOUnit {
   public static final int IFG2 = 3;
   public static final int ME1 = 4;
   public static final int ME2 = 5;
+  //the values have been taken from msp430f2618 datasheet
+  public static final int UC1IE = 6;
+  public static final int UC1IFG = 7;
 
   private int ie1 = 0;
   private int ie2 = 0;
@@ -59,6 +62,8 @@ public class SFR extends IOUnit {
   private int ifg2 = 0;
   private int me1 = 0;
   private int me2 = 0;
+  private int uc1ie = 0;
+  private int uc1ifg = 0;
 
   /* 64 = max number of interrupts */
   private SFRModule[] sfrModule = new SFRModule[64];
@@ -79,6 +84,8 @@ public class SFR extends IOUnit {
     ifg2 = 0;
     me1 = 0;
     me2 = 0;
+    uc1ie = 0;
+    uc1ifg = 0;
     /* no IRQ - but all are autoclear */
     for (int i = 0; i < irqTriggered.length; i++) {
       irqTriggered[i] = false;
@@ -100,7 +107,7 @@ public class SFR extends IOUnit {
   // write a value to the IO unit
   public void write(int address, int value, boolean word,
 			     long cycles) {
-    if (DEBUG) log("write to: " + address + " = " + value);
+    if (DEBUG) System.out.println("write to: " + address + " = " + value);
     switch (address) {
     case IE1:
     case IE2:
@@ -113,6 +120,11 @@ public class SFR extends IOUnit {
     case ME1:
     case ME2:
       updateME(address - ME1, value);
+    case UC1IE:
+	updateUC1IE(address , value);
+    	break;
+    case UC1IFG:
+	updateUC1IFG(address , value);
     }
     memory[address] = value;
   }
@@ -134,6 +146,10 @@ public class SFR extends IOUnit {
       return me1;
     case ME2:
       return me2;
+    case UC1IE:
+	return UC1IE;
+    case UC1IFG:
+	return UC1IFG;
     default:
       return memory[address];
     }
@@ -161,6 +177,29 @@ public class SFR extends IOUnit {
     updateIRQ(pos, change);
   }
 
+  private void updateUC1IE(int pos,int value) {
+    int oldVal = uc1ie;
+    int change = oldVal ^ value;
+    uc1ie = value;
+    if (DEBUG)
+	    System.out.println("update uc1ie with pos"+pos);
+    updateIRQ(pos, change);
+
+
+  }
+  
+  private void updateUC1IFG(int pos,int value) {
+     int oldVal =uc1ifg;
+    int change = oldVal ^ value;
+    uc1ifg  = value;
+    if (DEBUG)
+	   System.out.println("update uc1ifg");
+    updateIRQ(pos, change);
+
+
+  }
+
+
   private void updateME(int pos, int value) {
     int oldVal = pos == 0 ? me1 : me2;
     int change = oldVal ^ value;
@@ -185,15 +224,17 @@ public class SFR extends IOUnit {
     }
   }
   
-  private void updateIRQ(int pos, int change) {
-    int ifg = pos == 0 ? ifg1 : ifg2;
-    int ie = pos == 0 ? ie1 : ie2;
+   private void updateIRQ(int pos, int change) {
+    int ifg = pos == 0 ? ifg1 :pos == 1? ifg2:uc1ifg;
+    int ie = pos == 0 ? ie1 : pos == 1 ?ie2: uc1ie;
+    if (DEBUG)
+	System.out.println("updateirq with pos:"+pos);
     pos = pos * 8;
     for (int i = 0; i < 8; i++) {
       if ((change & 1) == 1)  {
         if (sfrModule[pos] != null && !irqTriggered[irqVector[pos]]) {
           /* interrupt goes directly to the module responsible */
-          if (DEBUG) log("flagging interrupt: " +
+          if (DEBUG) System.out.println("flagging interrupt: " +
               sfrModule[pos].getName() + " pos: " + pos + " ie: " + (ie & 1) + " ifg:" + (ifg & 1) + " chg: " + change);
           if ((ie & ifg & 1) > 0) {
             int vector = irqVector[pos];
@@ -212,32 +253,39 @@ public class SFR extends IOUnit {
   }
   
   public void setBitIFG(int index, int bits) {
-    int value = index == 0 ? ifg1 : ifg2;
+    int value = index == 0 ? ifg1 : index == 1? ifg2:uc1ifg;
     int after = value | bits;
     int change = value ^ after;
     if (index == 0) ifg1 = after;
-    else ifg2 = after;
-    
+    else if(index == 1)ifg2 = after;
+    else uc1ifg = after;
+    if (DEBUG)
+    	System.out.println("SetBitIFG");
     updateIRQ(index, change);
   }
 
   public void clrBitIFG(int index, int bits) {
-    int value = index == 0 ? ifg1 : ifg2;
+    int value = index == 0 ? ifg1 : index == 1? ifg2:uc1ifg;
     int after = value & ~bits;
     int change = value ^ after;
     if (index == 0) ifg1 = after;
-    else ifg2 = after;
+    else if(index == 1)ifg2 = after;
+    else uc1ifg = after;
+    if (DEBUG)
+    System.out.println("clrbitifg");
     updateIRQ(index, change);
   }
 
   public boolean isIEBitsSet(int index, int flags) {
     if (index == 0) return (ie1 & flags) == flags;
-    else return (ie2 & flags) == flags;
+    else if(index == 1) return (ie2 & flags) == flags;
+    else 	return (uc1ie & flags) == flags;
   }
 
   public int getIFG(int index) {
     if (index == 0) return ifg1;
-    else return ifg2;
+    else if(index == 1) return ifg2;
+    else return uc1ifg;
   }
 
   public void setAutoclear(int vector, boolean b) {

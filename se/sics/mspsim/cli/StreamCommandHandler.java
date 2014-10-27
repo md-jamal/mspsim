@@ -107,11 +107,9 @@ public class StreamCommandHandler extends CommandHandler implements Runnable {
     String lastLine = null;
     while(!exit) {
       try {
-	System.out.println("Printing Prompt:"+prompt);
         out.print(prompt);
         out.flush();
         String line = readLine(inReader);//.readLine();
-	System.out.println("Input from user :"+line);
         // Simple execution of last called command line when not running from terminal with history support
         if (((char) 27 + "[A").equals(line)) {
           line = lastLine;          

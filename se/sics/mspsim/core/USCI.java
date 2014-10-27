@@ -42,18 +42,18 @@ import se.sics.mspsim.core.EmulationLogger.WarningType;
 
 public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
 
-  // USART 0/1 register offset (0x60 / 0xD0)
-  public static final int UAxCTL0 = 0;
-  public static final int UAxCTL1 = 1;
-  public static final int UAxBR0 = 2;
+ // USART 0/1 register offset (0x60 / 0xD0)
+  public static final int UAxCTL0 = 0;//0x60+0 or 0xd0+0
+  public static final int UAxCTL1 = 1;//0x60+1 or 0xd0+1
+  public static final int UAxBR0 = 2;//0x60+2 or 0xd0+2
   public static final int UAxBR1 = 3;
   public static final int UAxMCTL = 4;
   public static final int UAxSTAT = 5;
   public static final int UAxRXBUF = 6;
   public static final int UAxTXBUF = 7;
   
-  // SPI related registers
-  public static final int UBxCTL0 = 8;
+ // SPI related registers
+  public static final int UBxCTL0 = 8;	//0x60+8
   public static final int UBxCTL1 = 9;
   public static final int UBxBR0 = 0xa;
   public static final int UBxBR1 = 0xb;
@@ -144,12 +144,13 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
 
     // Initialize - transmit = ok...
     // and set which interrupts are used
-    if (uartConfig.sfrAddr < 2) {
+        if (uartConfig.sfrAddr < 7) {	//    if (uartConfig.sfrAddr < 2){ previously uscia1 interrupt was not done
         sfr = cpu.getSFR();
         sfrAddress = uartConfig.sfrAddr;
         sfr.registerSFDModule(uartConfig.sfrAddr, uartConfig.rxBit, this, uartConfig.rxVector);
         sfr.registerSFDModule(uartConfig.sfrAddr, uartConfig.txBit, this, uartConfig.txVector);
     } else {
+
         sfr = null;
         sfrAddress = 0;
         ieAddress = uartConfig.sfrAddr;
@@ -300,7 +301,7 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
       break;
     case UAxTXBUF:
     case UBxTXBUF:
-      if (DEBUG) log(": USART_UTXBUF:" + (char) data + " = " + data + "\n");
+      if (true) System.out.println(": USART_UTXBUF:" + (char) data + " = " + data + "\n");
       if (txEnabled || (spiMode && rxEnabled)) {
         // Interruptflag not set!
         clrBitIFG(utxifg);

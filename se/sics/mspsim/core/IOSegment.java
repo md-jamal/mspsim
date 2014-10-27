@@ -46,7 +46,6 @@ public class IOSegment implements Memory {
     @Override
     public void write(int dstAddress, int data, AccessMode mode) throws EmulationException {
         boolean word = mode != AccessMode.BYTE;
-
         if (!word) data &= 0xff;
         mem[dstAddress].write(dstAddress, data & 0xffff, word, core.cycles);
         if (mode == AccessMode.WORD20) {

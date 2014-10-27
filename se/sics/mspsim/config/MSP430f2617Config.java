@@ -71,6 +71,7 @@ public class MSP430f2617Config extends MSP430Config {
         timerConfig = new TimerConfig[] {timerA, timerB};
 
         /* TX Vec, RX Vec, TX Bit, RX Bit, SFR-reg, Offset, Name, A?*/
+	/*tx bit in the sfr register,rx bit in the sfr register you can msp430f2618.h to understand this*/
         UARTConfig uA0 = new UARTConfig(22, 23, 1, 0, 1, 0x60, "USCI A0", true);
         UARTConfig uB0 = new UARTConfig(22, 23, 3, 2, 1, 0x68, "USCI B0", false);
         UARTConfig uA1 = new UARTConfig(16, 17, 1, 0, 6, 0xD0, "USCI A1", true);
@@ -88,7 +89,6 @@ public class MSP430f2617Config extends MSP430Config {
 
         Multiplier mp = new Multiplier(cpu, cpu.memory, 0);
         cpu.setIORange(0x130, 0x0f, mp);
-
         USCI usciA0 = new USCI(cpu, 0, cpu.memory, this);
         USCI usciB0 = new USCI(cpu, 1, cpu.memory, this);
         USCI usciA1 = new USCI(cpu, 2, cpu.memory, this);
@@ -109,8 +109,7 @@ public class MSP430f2617Config extends MSP430Config {
         ioUnits.add(usciA1);
         ioUnits.add(usciB1);
         
-        /* usciA1 handles interrupts for both usciA1 and B1 */
-        cpu.setIORange(0x06, 2, usciA1);
+      
 
         // Add port 1,2 with interrupt capability!
         // IOPorts will add themselves to the CPU

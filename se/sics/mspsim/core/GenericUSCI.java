@@ -158,7 +158,6 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
         if (cpu.getMode() >= MSP430Core.MODE_LPM3) {
             System.out.println(getName() + " Warning: USART transmission during LPM!!! ");
         }
-        System.out.println("Transmission");
         if (transmitting) {
             /* in this case we have shifted out the last character */
             USARTListener listener = this.usartListener;

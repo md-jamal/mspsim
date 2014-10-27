@@ -115,6 +115,7 @@ public class SmoteNode extends GenericNode implements PortListener,USARTListener
 	
         	IOUnit usart = cpu.getIOUnit("USCI A1");
         	if (usart instanceof USARTSource) {
+		//	((USARTSource) usart).addUSARTListener(this);
         	    registry.registerComponent("serialio", usart);
         	}
 
@@ -190,7 +191,7 @@ public class SmoteNode extends GenericNode implements PortListener,USARTListener
 
 
 	public void dataReceived(USARTSource source, int data) {
-		System.out.println("Data received called");
+		System.out.println("Data received called"+data);
 	}
 
 	public int getModeMax() {
